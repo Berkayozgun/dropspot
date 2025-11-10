@@ -2,6 +2,7 @@
 
 \## 1. Proje Başlangıç ve Seed Bilgileri (Alpaco Gereksinimi)
 
+<<<<<<< HEAD
 | Bilgi Alanı | Değer |
 | --- | --- |
 | Projeye Başlama Zamanı (YYYYMMDDHHmm) | \*\*202511101749\*\* |
@@ -13,6 +14,19 @@
 \* A = \*\*11\*\*   
 \* B = \*\*19\*\*   
 \* C = \*\*3\*\*
+=======
+| Bilgi Alanı | Değer |  
+| :--- | :--- |  
+| Projeye Başlama Zamanı (YYYYMMDDHHmm) | \*\*202511101749\*\* |  
+| GitHub Remote URL | \*\*https://github.com/BerkayOzgun/dropspot.git\*\* |  
+| İlk Commit Epoch Time (saniye) | \*\*\[EPOCH BURAYA GELECEK\]\*\* |  
+| Seed Hash (SHA256 İlk 12 Karakter) | \*\*\[SEED HASH BURAYA GELECEK\]\*\* |
+
+\### Priority Score Katsayıları  
+\* A = \[A DEĞERİ\]  
+\* B = \[B DEĞERİ\]  
+\* C = \[C DEĞERİ\]
+>>>>>>> a8d2ac395904b5c560480518b5aef444d1a9f17a
 
 \---  
 \## 2. Kurulum ve Çalıştırma  
