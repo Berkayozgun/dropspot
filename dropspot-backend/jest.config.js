@@ -12,6 +12,6 @@ module.exports = {
     }],
   },
   moduleNameMapper: {
-    '@prisma/client': '<rootDir>/node_modules/@prisma/client',
+    '@prisma/client': '<rootDir>/generated/prisma',
   },
 };
