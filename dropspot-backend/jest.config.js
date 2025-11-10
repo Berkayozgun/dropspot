@@ -11,7 +11,4 @@ module.exports = {
       tsconfig: 'tsconfig.json',
     }],
   },
-  moduleNameMapper: {
-    '@prisma/client': '<rootDir>/generated/prisma/client.ts',
-  },
 };
