@@ -9,8 +9,12 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".", // Base URL for path mapping
+    "paths": {
+      "@prisma/client": ["./generated/prisma"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "generated/**/*.ts"],
   "exclude": ["node_modules"]
 }
