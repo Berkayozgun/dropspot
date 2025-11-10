@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link"; // Link bileşenini import et
+import { AuthProvider } from "../../context/AuthContext"; // AuthProvider'ı import et
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,27 +29,38 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <nav className="bg-gray-800 p-4 text-white">
-          <ul className="flex space-x-4">
-            <li>
-              <Link href="/">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/drops">
-                Drops
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/drops">
-                Admin (Drops)
-              </Link>
-            </li>
-            {/* Kimlik doğrulama bağlantıları burada eklenebilir */}
-          </ul>
-        </nav>
-        {children}
+        <AuthProvider> {/* AuthProvider ile sarmala */}
+          <nav className="bg-gray-800 p-4 text-white">
+            <ul className="flex space-x-4">
+              <li>
+                <Link href="/">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/drops">
+                  Drops
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/drops">
+                  Admin (Drops)
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/login">
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/register">
+                  Register
+                </Link>
+              </li>
+            </ul>
+          </nav>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
