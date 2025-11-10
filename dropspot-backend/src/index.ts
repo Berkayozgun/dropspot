@@ -40,6 +40,10 @@ app.post('/drops/:id/leave', authenticateToken, waitlistController.leaveWaitlist
 // Claim route (protected)
 app.post('/drops/:id/claim', authenticateToken, claimController.claimDrop);
 
-app.listen(PORT, () => {
-  console.log(`Server ${PORT} portunda çalışıyor.`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server ${PORT} portunda çalışıyor.`);
+  });
+}
+
+export default app;
