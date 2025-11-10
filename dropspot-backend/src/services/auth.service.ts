@@ -1,17 +1,18 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret'; // Gerçek projede güvenli bir şekilde yönetilmelidir.
 
-export const registerUser = async (email: string, password_plain: string, name?: string) => {
+export const registerUser = async (email: string, password_plain: string, name?: string, role: Role = Role.USER) => {
   const hashedPassword = await bcrypt.hash(password_plain, 10);
   const user = await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
       name,
+      role, // Role'ü ekle
     },
   });
   // Parolayı geri döndürmemek güvenlik açısından önemlidir.
