@@ -40,30 +40,47 @@ export const claimDrop = async (userId: string, dropId: string) => {
     throw new Error('Stok kalmamış.');
   }
 
-  // 5. Kullanıcının zaten hak talebinde bulunup bulunmadığını kontrol et (ClaimCode modeli eklenecek)
-  // Bu adım için ClaimCode modeline ihtiyacımız var.
-  // Şimdilik, sadece tek seferlik claim kodu oluşturma mantığına odaklanalım.
-
-  // 6. Sıra mekanizması (priority score kullanarak)
-  // Bu kısım, daha karmaşık bir mantık gerektirir.
-  // Şimdilik, sadece basit bir hak talebinde bulunma işlemini gerçekleştireceğiz.
-  // Gerçek uygulamada, bekleme listesindeki kullanıcıları priorityScore'a göre sıralayıp
-  // sırası gelen kullanıcının hak talebinde bulunmasını sağlamamız gerekir.
-
-  // Basit bir tek seferlik claim kodu oluştur
-  const claimCode = crypto.randomBytes(16).toString('hex');
-
-  // Stoktan düş ve claim kodunu kaydet (ClaimCode modeli eklenecek)
-  // Şu an için ClaimCode modeli olmadığından, sadece stoktan düşelim.
-  await prisma.drop.update({
-    where: { id: dropId },
-    data: {
-      availableStock: {
-        decrement: 1,
+  // 5. Kullanıcının zaten hak talebinde bulunup bulunmadığını kontrol et
+  const existingClaim = await prisma.claimCode.findUnique({
+    where: {
+      userId_dropId: {
+        userId,
+        dropId,
       },
     },
   });
 
-  // ClaimCode modelini ekledikten sonra burayı güncelleyeceğiz.
-  return { message: 'Başarıyla hak talebinde bulunuldu!', claimCode };
+  if (existingClaim) {
+    throw new Error('Zaten hak talebinde bulundunuz.');
+  }
+
+  // 6. Sıra mekanizması (priority score kullanarak)
+  // Bu kısım, daha karmaşık bir mantık gerektirir. Şu an için sadece sıradaki ilk kişinin claim yapabildiğini varsayalım.
+  // Gerçek uygulamada, bekleme listesindeki kullanıcıları priorityScore'a göre sıralayıp
+  // sırası gelen kullanıcının hak talebinde bulunmasını sağlamamız gerekir.
+
+  // Basit bir tek seferlik claim kodu oluştur
+  const claimCodeValue = crypto.randomBytes(16).toString('hex');
+
+  // Stoktan düş ve claim kodunu kaydet
+  await prisma.$transaction(async (tx) => {
+    await tx.drop.update({
+      where: { id: dropId },
+      data: {
+        availableStock: {
+          decrement: 1,
+        },
+      },
+    });
+
+    await tx.claimCode.create({
+      data: {
+        code: claimCodeValue,
+        userId,
+        dropId,
+      },
+    });
+  });
+
+  return { message: 'Başarıyla hak talebinde bulunuldu!', claimCode: claimCodeValue };
 };
