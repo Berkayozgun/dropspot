@@ -12,6 +12,6 @@ module.exports = {
     }],
   },
   moduleNameMapper: {
-    '@prisma/client': '<rootDir>/generated/prisma',
+    '@prisma/client': '<rootDir>/generated/prisma/client.ts',
   },
 };
