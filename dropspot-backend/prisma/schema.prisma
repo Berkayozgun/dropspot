@@ -28,6 +28,7 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   waitlists Waitlist[] // Yeni eklenen ters ilişki
+  claimCodes ClaimCode[]  // Yeni eklenen ters ilişki
 }
 
 model Drop {
@@ -43,6 +44,7 @@ model Drop {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
   waitlists        Waitlist[] // Yeni eklenen ters ilişki
+  claimCodes       ClaimCode[]  // Yeni eklenen ters ilişki
 
   @@map("drops")
 }
