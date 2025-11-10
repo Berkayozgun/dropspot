@@ -3,7 +3,7 @@ module.exports = {
   testEnvironment: 'node',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    '@prisma/client': '<rootDir>/generated/prisma/client.ts',
+    '@prisma/client': '<rootDir>/generated/prisma',
   },
   roots: ['<rootDir>/src'],
   testMatch: [
