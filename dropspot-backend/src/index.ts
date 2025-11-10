@@ -3,6 +3,7 @@ import express from 'express';
 import * as authController from './controllers/auth.controller';
 import * as dropController from './controllers/drop.controller'; // dropController'ı içe aktar
 import { authenticateToken } from './middlewares/auth.middleware';
+import { authorizeAdmin } from './middlewares/admin.middleware'; // authorizeAdmin'i içe aktar
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,10 +26,10 @@ app.get('/protected', authenticateToken, (req: any, res) => {
 // Drop routes (public)
 app.get('/drops', dropController.getDrops);
 
-// Admin Drop routes (protected - authentication will be added later)
-app.post('/admin/drops', dropController.createDrop);
-app.put('/admin/drops/:id', dropController.updateDrop);
-app.delete('/admin/drops/:id', dropController.deleteDrop);
+// Admin Drop routes (protected with authentication and authorization)
+app.post('/admin/drops', authenticateToken, authorizeAdmin, dropController.createDrop);
+app.put('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.updateDrop);
+app.delete('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.deleteDrop);
 
 app.listen(PORT, () => {
   console.log(`Server ${PORT} portunda çalışıyor.`);
