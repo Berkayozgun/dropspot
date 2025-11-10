@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext'; // useAuth hook'unu import et
 
 interface Drop {
   id: string;
@@ -14,69 +14,37 @@ interface Drop {
   releaseDate: string;
   claimWindowStart: string;
   claimWindowEnd: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export default function DropDetailPage({ params }: { params: { id: string } }) {
-  const { id: dropId } = params;
+  const { id } = params;
   const router = useRouter();
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated, token } = useAuth(); // useAuth hook'unu kullan
 
   const [drop, setDrop] = useState<Drop | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isOnWaitlist, setIsOnWaitlist] = useState(false);
-  const [waitlistLoading, setWaitlistLoading] = useState(false);
-
-  const fetchDropDetails = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`http://localhost:3000/drops/${dropId}`);
-      if (!response.ok) {
-        throw new Error('Drop detayları yüklenemedi.');
-      }
-      const data: Drop = await response.json();
-      setDrop(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkWaitlistStatus = async () => {
-    if (!isAuthenticated || !token) {
-      setIsOnWaitlist(false);
-      return;
-    }
-    try {
-      const response = await fetch(`http://localhost:3000/drops/${dropId}/waitlist-status`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setIsOnWaitlist(data.isOnWaitlist);
-      } else if (response.status === 404) {
-        // User is not on waitlist
-        setIsOnWaitlist(false);
-      } else {
-        console.error('Bekleme listesi durumu kontrol edilirken hata oluştu.', await response.json());
-        setIsOnWaitlist(false);
-      }
-    } catch (err) {
-      console.error('Bekleme listesi durumu kontrol edilirken hata oluştu.', err);
-      setIsOnWaitlist(false);
-    }
-  };
+  const [joinLoading, setJoinLoading] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function fetchDropDetails() {
+      try {
+        const response = await fetch(`http://localhost:3000/drops/${id}`);
+        if (!response.ok) {
+          throw new Error('Drop detayları yüklenemedi.');
+        }
+        const data: Drop = await response.json();
+        setDrop(data);
+      } catch (err: any) {
+        setError(err.message || 'Bir hata oluştu.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
     fetchDropDetails();
-    checkWaitlistStatus();
-  }, [isAuthenticated, token, dropId]);
+  }, [id]);
 
   const handleJoinWaitlist = async () => {
     if (!isAuthenticated) {
@@ -84,58 +52,31 @@ export default function DropDetailPage({ params }: { params: { id: string } }) {
       router.push('/auth/login');
       return;
     }
-    setWaitlistLoading(true);
+
+    setJoinError(null);
+    setJoinLoading(true);
+
     try {
-      const response = await fetch(`http://localhost:3000/drops/${dropId}/join`, {
+      const response = await fetch(`http://localhost:3000/drops/${id}/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Bekleme listesine katılırken hata oluştu.');
-      }
-      alert('Başarıyla bekleme listesine katıldınız!');
-      setIsOnWaitlist(true);
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setWaitlistLoading(false);
-    }
-  };
 
-  const handleLeaveWaitlist = async () => {
-    if (!!isAuthenticated) {
-      alert('Bekleme listesinden ayrılmak için giriş yapmalısınız.');
-      router.push('/auth/login');
-      return;
-    }
-    setWaitlistLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3000/drops/${dropId}/leave`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Bekleme listesinden ayrılırken hata oluştu.');
-      }
-      alert('Başarıyla bekleme listesinden ayrıldınız!');
-      setIsOnWaitlist(false);
-    } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setWaitlistLoading(false);
-    }
-  };
+      const data = await response.json();
 
-  const handleClaimDrop = () => {
-    router.push(`/drops/${dropId}/claim`);
+      if (!response.ok) {
+        throw new Error(data.message || 'Bekleme listesine katılamadı.');
+      }
+
+      alert('Bekleme listesine başarıyla katıldınız!');
+    } catch (err: any) {
+      setJoinError(err.message || 'Bir hata oluştu.');
+    } finally {
+      setJoinLoading(false);
+    }
   };
 
   if (loading) {
@@ -151,73 +92,41 @@ export default function DropDetailPage({ params }: { params: { id: string } }) {
   }
 
   const now = new Date();
-  const releaseDate = new Date(drop.releaseDate);
-  const claimWindowStart = new Date(drop.claimWindowStart);
-  const claimWindowEnd = new Date(drop.claimWindowEnd);
-
-  const isClaimWindowOpen = now >= claimWindowStart && now <= claimWindowEnd;
+  const isClaimWindowOpen = now >= new Date(drop.claimWindowStart) && now <= new Date(drop.claimWindowEnd);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">{drop.name}</h1>
-        <p className="text-gray-600 mb-6">{drop.description}</p>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Drop Detayı: {drop.name}</h1>
+      <p className="text-gray-700 mb-4">{drop.description}</p>
+      <p className="text-xl font-bold mb-2">Fiyat: ${drop.price.toFixed(2)}</p>
+      <p className="text-md text-gray-600 mb-2">Mevcut Stok: {drop.availableStock} / {drop.stock}</p>
+      <p className="text-sm text-gray-500">Yayın Tarihi: {new Date(drop.releaseDate).toLocaleDateString()}</p>
+      <p className="text-sm text-gray-500">Claim Penceresi: {new Date(drop.claimWindowStart).toLocaleDateString()} - {new Date(drop.claimWindowEnd).toLocaleDateString()}</p>
+      
+      {isClaimWindowOpen ? (
+        <p className="text-green-600 font-bold mt-4">Claim Penceresi AÇIK!</p>
+      ) : (
+        <p className="text-red-600 font-bold mt-4">Claim Penceresi KAPALI.</p>
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-gray-700">
-          <div>
-            <p><strong>Fiyat:</strong> ${drop.price}</p>
-            <p><strong>Stok:</strong> {drop.stock}</p>
-            <p><strong>Mevcut Stok:</strong> {drop.availableStock}</p>
-          </div>
-          <div>
-            <p><strong>Yayın Tarihi:</strong> {new Date(drop.releaseDate).toLocaleString()}</p>
-            <p><strong>Claim Başlangıcı:</strong> {new Date(drop.claimWindowStart).toLocaleString()}</p>
-            <p><strong>Claim Bitişi:</strong> {new Date(drop.claimWindowEnd).toLocaleString()}</p>
-          </div>
-        </div>
+      {joinError && <p className="text-red-500 text-xs italic mt-4">{joinError}</p>}
+      <button
+        onClick={handleJoinWaitlist}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+        disabled={joinLoading}
+      >
+        {joinLoading ? 'Katılıyor...' : 'Join Waitlist'}
+      </button>
 
-        <div className="flex flex-col gap-3">
-          {isAuthenticated ? (
-            isOnWaitlist ? (
-              <button
-                onClick={handleLeaveWaitlist}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
-                disabled={waitlistLoading}
-              >
-                {waitlistLoading ? 'Ayrılıyor...' : 'Bekleme Listesinden Ayrıl'}
-              </button>
-            ) : (
-              <button
-                onClick={handleJoinWaitlist}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
-                disabled={waitlistLoading}
-              >
-                {waitlistLoading ? 'Katılıyor...' : 'Bekleme Listesine Katıl'}
-              </button>
-            )
-          ) : (
-            <p className="text-yellow-600">Bekleme listesine katılmak için giriş yapmalısınız.</p>
-          )}
+      {isClaimWindowOpen && isAuthenticated && (
+        <button
+          onClick={() => router.push(`/drops/${id}/claim`)}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2 mt-4"
+        >
+          Claim Drop
+        </button>
+      )}
 
-          {isAuthenticated && isOnWaitlist && isClaimWindowOpen && ( drop.availableStock > 0 ) && (
-            <button
-              onClick={handleClaimDrop}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out mt-4"
-            >
-              Drop'u Talep Et
-            </button>
-          )}
-
-          {!isAuthenticated && (
-            <button
-              onClick={() => router.push('/auth/login')}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150 ease-in-out mt-4"
-            >
-              Giriş Yap
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
