@@ -20,27 +20,60 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   password  String
   name      String?
-  role      Role     @default(USER) // Yeni eklenen role alanı
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  waitlists Waitlist[] // Yeni eklenen ters ilişki
+  claimCodes ClaimCode[]  // Yeni eklenen ters ilişki
 }
 
 model Drop {
-  id               String    @id @default(uuid())
+  id               String     @id @default(uuid())
   name             String
   description      String?
   price            Float
   stock            Int
-  availableStock   Int       // Kalan stok miktarı
+  availableStock   Int
   releaseDate      DateTime
   claimWindowStart DateTime
   claimWindowEnd   DateTime
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  waitlists        Waitlist[] // Yeni eklenen ters ilişki
+  claimCodes       ClaimCode[]  // Yeni eklenen ters ilişki
 
   @@map("drops")
+}
+
+model Waitlist {
+  id              String   @id @default(uuid())
+  userId          String
+  dropId          String
+  joinedAt        DateTime @default(now())
+  priorityScore   Float? // Kullanıcının bekleme listesindeki öncelik skoru
+
+  user            User     @relation(fields: [userId], references: [id])
+  drop            Drop     @relation(fields: [dropId], references: [id])
+
+  @@unique([userId, dropId]) // Bir kullanıcı aynı drop'a birden fazla kez katılamaz
+  @@map("waitlists")
+}
+
+model ClaimCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  userId    String
+  dropId    String
+  claimedAt DateTime @default(now())
+  isUsed    Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id])
+  drop      Drop     @relation(fields: [dropId], references: [id])
+
+  @@unique([userId, dropId]) // Bir kullanıcı aynı drop için yalnızca bir kez claim yapabilir
+  @@map("claim_codes")
 }
