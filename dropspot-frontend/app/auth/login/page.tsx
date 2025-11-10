@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import { useAuth } from '../../../context/AuthContext'; // useAuth hook'unu import et
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth(); // useAuth hook'unu kullan
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -28,10 +30,9 @@ export default function LoginPage() {
         throw new Error(data.message || 'Giriş başarısız.');
       }
 
-      // Başarılı giriş: token'ı localStorage'a kaydet ve yönlendir
-      localStorage.setItem('token', data.token);
+      // Başarılı giriş: token'ı AuthContext'e kaydet ve yönlendir
+      login(data.token);
       alert('Giriş başarılı!');
-      // Yönlendirme mantığı burada eklenecek (örn. anasayfaya)
       window.location.href = '/';
     } catch (err: any) {
       setError(err.message || 'Bir hata oluştu.');
