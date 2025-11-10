@@ -20,27 +20,29 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   password  String
   name      String?
-  role      Role     @default(USER) // Yeni eklenen role alanı
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  waitlists Waitlist[] // Yeni eklenen ters ilişki
 }
 
 model Drop {
-  id               String    @id @default(uuid())
+  id               String     @id @default(uuid())
   name             String
   description      String?
   price            Float
   stock            Int
-  availableStock   Int       // Kalan stok miktarı
+  availableStock   Int
   releaseDate      DateTime
   claimWindowStart DateTime
   claimWindowEnd   DateTime
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  waitlists        Waitlist[] // Yeni eklenen ters ilişki
 
   @@map("drops")
 }
