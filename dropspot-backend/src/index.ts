@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import * as authController from './controllers/auth.controller';
 import * as dropController from './controllers/drop.controller'; // dropController'ı içe aktar
+import * as waitlistController from './controllers/waitlist.controller'; // waitlistController'ı içe aktar
+import * as claimController from './controllers/claim.controller';     // claimController'ı içe aktar
 import { authenticateToken } from './middlewares/auth.middleware';
 import { authorizeAdmin } from './middlewares/admin.middleware'; // authorizeAdmin'i içe aktar
 
@@ -30,6 +32,13 @@ app.get('/drops', dropController.getDrops);
 app.post('/admin/drops', authenticateToken, authorizeAdmin, dropController.createDrop);
 app.put('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.updateDrop);
 app.delete('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.deleteDrop);
+
+// Waitlist routes (protected)
+app.post('/drops/:id/join', authenticateToken, waitlistController.joinWaitlist);
+app.post('/drops/:id/leave', authenticateToken, waitlistController.leaveWaitlist);
+
+// Claim route (protected)
+app.post('/drops/:id/claim', authenticateToken, claimController.claimDrop);
 
 app.listen(PORT, () => {
   console.log(`Server ${PORT} portunda çalışıyor.`);
