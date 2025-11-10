@@ -18,7 +18,8 @@
     "bcryptjs": "^3.0.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^6.19.0"
+    "prisma": "^6.19.0",
+    "simple-git": "^3.30.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
