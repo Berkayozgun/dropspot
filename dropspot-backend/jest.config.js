@@ -6,7 +6,4 @@ module.exports = {
   testMatch: [
     '<rootDir>/src/tests/**/*.test.ts',
   ],
-  setupFilesAfterEnv: [
-    './jest.setup.js' // Opsiyonel: Global setup için
-  ],
 };
