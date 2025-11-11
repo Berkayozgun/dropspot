@@ -15,6 +15,7 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const { user, token } = await authService.loginUser(email, password);
+    console.log('Sending login response:', { user, token }); // Yanıtı konsola yazdır
     res.status(200).json({ user, token });
   } catch (error: any) {
     res.status(401).json({ message: error.message });

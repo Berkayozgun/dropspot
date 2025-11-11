@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role } from '../../generated/prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 
@@ -31,7 +31,8 @@ export const loginUser = async (email: string, password_plain: string) => {
     throw new Error('Geçersiz kimlik bilgileri');
   }
 
-  const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+  console.log('Generated token:', token); // Token'ı logla
   const { password, ...userWithoutPassword } = user;
   return { user: userWithoutPassword, token };
 };
