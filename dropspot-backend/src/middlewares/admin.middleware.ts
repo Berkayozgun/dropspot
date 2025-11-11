@@ -8,13 +8,13 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const authorizeAdmin = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  console.log('Admin Middleware: Yetkilendirme kontrolü başladı. userId:', req.userId);
   if (!req.userId) {
     console.log('Admin Middleware: userId yok, 401 dönülüyor.');
     return res.status(401).json({ message: 'Yetkilendirme token bulunamadi.' });
   }
 
   try {
-    console.log('Admin Middleware: userId:', req.userId);
     const user = await prisma.user.findUnique({ where: { id: req.userId } });
 
     if (!user) {
@@ -31,6 +31,7 @@ export const authorizeAdmin = async (req: AuthenticatedRequest, res: Response, n
     console.log('Admin Middleware: Erişim onaylandı.');
     next();
   } catch (error: any) {
+    console.error('Admin Middleware: Hata oluştu:', error);
     res.status(500).json({ message: error.message });
   }
 };

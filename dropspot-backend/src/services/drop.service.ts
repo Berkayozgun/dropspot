@@ -57,7 +57,29 @@ export const updateDrop = async (id: string, data: UpdateDropInput) => {
 };
 
 export const deleteDrop = async (id: string) => {
-  await prisma.drop.delete({
-    where: { id },
-  });
+  console.log('Drop Service: Delete isteği alındı. dropId:', id);
+  try {
+    await prisma.$transaction(async (tx) => {
+      // İlgili ClaimCode kayıtlarını sil
+      await tx.claimCode.deleteMany({
+        where: { dropId: id },
+      });
+      console.log('Drop Service: İlgili ClaimCode kayıtları silindi.', id);
+
+      // İlgili Waitlist kayıtlarını sil
+      await tx.waitlist.deleteMany({
+        where: { dropId: id },
+      });
+      console.log('Drop Service: İlgili Waitlist kayıtları silindi.', id);
+
+      // Drop'u sil
+      await tx.drop.delete({
+        where: { id },
+      });
+      console.log('Drop Service: Drop başarıyla silindi.', id);
+    });
+  } catch (error) {
+    console.error('Drop Service: Drop silinirken hata oluştu:', error);
+    throw error; // Hatanın yayılmasını sağla
+  }
 };
