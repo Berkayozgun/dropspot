@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import * as authController from './controllers/auth.controller';
 import * as dropController from './controllers/drop.controller'; // dropController'ı içe aktar
 import * as waitlistController from './controllers/waitlist.controller'; // waitlistController'ı içe aktar
@@ -11,6 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.url}`);
+  next();
+});
+app.use(cors()); // CORS middleware'ini ekle
 
 // Auth routes
 app.post('/auth/register', authController.register);
@@ -27,9 +33,12 @@ app.get('/protected', authenticateToken, (req: any, res) => {
 
 // Drop routes (public)
 app.get('/drops', dropController.getDrops);
+app.get('/drops/:id', dropController.getDropById); // Drop detaylarını getirme route'u eklendi
 
 // Admin Drop routes (protected with authentication and authorization)
 app.post('/admin/drops', authenticateToken, authorizeAdmin, dropController.createDrop);
+app.get('/admin/drops', authenticateToken, authorizeAdmin, dropController.getAdminDrops); // Admin droplarını getirme route'u eklendi
+app.get('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.getAdminDropById); // Admin drop detaylarını getirme route'u eklendi
 app.put('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.updateDrop);
 app.delete('/admin/drops/:id', authenticateToken, authorizeAdmin, dropController.deleteDrop);
 

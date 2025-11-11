@@ -11,7 +11,7 @@ export const claimDrop = async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.userId as string;
 
     if (!userId) {
-      return res.status(401).json({ message: 'Yetkilendirme token'ı bulunamadı.' });
+      return res.status(401).json({ message: 'Yetkilendirme token bulunamadi.' });
     }
 
     const claimResult = await claimService.claimDrop(userId, dropId);

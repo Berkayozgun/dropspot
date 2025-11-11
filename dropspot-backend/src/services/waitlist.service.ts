@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma/client';
 import { calculatePriorityScore } from './priority.service';
 import { generateSeed } from '../utils/seed.util';
 import * as git from 'simple-git'; // Git komutlarını çalıştırmak için

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -34,6 +34,16 @@ export const createDrop = async (data: CreateDropInput) => {
 };
 
 export const getDrops = async () => {
+  const drops = await prisma.drop.findMany();
+  return drops;
+};
+
+export const getDropById = async (id: string) => {
+  const drop = await prisma.drop.findUnique({ where: { id } });
+  return drop;
+};
+
+export const getAdminDrops = async () => {
   const drops = await prisma.drop.findMany();
   return drops;
 };
