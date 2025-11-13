@@ -1,49 +1,58 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../context/AuthContext'; // useAuth hook'unu import et
+import { useRouter, useParams } from 'next/navigation'; // useParams hook'u eklendi
+import { useAuth } from '../../../../context/AuthContext'; // useAuth hook'unu import et
 
 interface ClaimResult {
   message: string;
   claimCode?: string;
 }
 
-export default function ClaimPage({ params }: { params: { id: string } }) {
-  const { id: dropId } = params;
-  const router = useRouter();
-  const { isAuthenticated, token } = useAuth();
+interface Drop {
+  id: string;
+  name: string;
+}
 
-  const [dropName, setDropName] = useState('Loading...'); // Drop adını göstermek için
+export default function ClaimPage() { // params prop'u kaldırıldı
+  const router = useRouter();
+  const params = useParams(); // useParams hook'unu kullanarak params'ı al
+  const id = params.id as string;
+  const { token, isAuthenticated } = useAuth();
+
+  const [dropName, setDropName] = useState('Unknown Drop');
   const [loading, setLoading] = useState(true);
   const [claimLoading, setClaimLoading] = useState(false);
-  const [claimError, setClaimError] = useState<string | null>(null);
-  const [claimSuccess, setClaimSuccess] = useState<ClaimResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [claimCode, setClaimCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/auth/login'); // Giriş yapmamışsa login sayfasına yönlendir
+      router.push('/auth/login');
+      return;
+    }
+    if (!id) {
+      setError('Drop ID bulunamadı.');
+      setLoading(false);
       return;
     }
 
     async function fetchDropName() {
       try {
-        const response = await fetch(`http://localhost:3000/drops/${dropId}`);
+        const response = await fetch(`http://localhost:3000/drops/${id}`);
         if (!response.ok) {
-          throw new Error('Drop bilgileri yüklenemedi.');
+          throw new Error('Drop adı yüklenemedi.');
         }
-        const data = await response.json();
+        const data: Drop = await response.json();
         setDropName(data.name);
       } catch (err: any) {
-        console.error('Error fetching drop name:', err);
-        setDropName('Unknown Drop');
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     }
-
     fetchDropName();
-  }, [isAuthenticated, router, dropId]);
+  }, [id, isAuthenticated, router]);
 
   const handleClaimDrop = async () => {
     if (!isAuthenticated) {
@@ -52,11 +61,11 @@ export default function ClaimPage({ params }: { params: { id: string } }) {
       return;
     }
 
-    setClaimError(null);
+    setError(null);
     setClaimLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:3000/drops/${dropId}/claim`, {
+      const response = await fetch(`http://localhost:3000/drops/${id}/claim`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,10 +79,10 @@ export default function ClaimPage({ params }: { params: { id: string } }) {
         throw new Error(data.message || 'Hak talebi başarısız.');
       }
 
-      setClaimSuccess(data);
+      setClaimCode(data.claimCode);
       alert(data.message || 'Başarıyla hak talebinde bulunuldu!');
     } catch (err: any) {
-      setClaimError(err.message || 'Bir hata oluştu.');
+      setError(err.message || 'Bir hata oluştu.');
     }
     setClaimLoading(false);
   };
@@ -82,14 +91,14 @@ export default function ClaimPage({ params }: { params: { id: string } }) {
     return <div className="container mx-auto p-4">Yükleniyor...</div>;
   }
 
-  if (claimSuccess) {
+  if (claimCode) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
           <h1 className="text-2xl font-bold mb-4 text-green-600">Hak Talebi Başarılı!</h1>
-          <p className="mb-4">{claimSuccess.message}</p>
-          {claimSuccess.claimCode && (
-            <p className="text-xl font-bold mb-4">Claim Kodu: <span className="text-blue-600 break-all">{claimSuccess.claimCode}</span></p>
+          <p className="mb-4">Drop için hak talebinde bulunuldu.</p>
+          {claimCode && (
+            <p className="text-xl font-bold mb-4">Claim Kodu: <span className="text-blue-600 break-all">{claimCode}</span></p>
           )}
           <button
             onClick={() => router.push('/drops')}
@@ -107,13 +116,13 @@ export default function ClaimPage({ params }: { params: { id: string } }) {
       <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-6 text-center">{dropName} için Hak Talebi</h1>
         <p className="text-center text-gray-700 mb-4">Drop için hak talebinde bulunmak üzeresiniz.</p>
-        {claimError && <p className="text-red-500 text-xs italic mb-4 text-center">{claimError}</p>}
+        {error && <p className="text-red-500 text-xs italic mb-4 text-center">{error}</p>}
         <button
           onClick={handleClaimDrop}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline"
           disabled={claimLoading}
         >
-          {claimLoading ? 'Talep Ediliyor...' : 'Drop'u Talep Et'}
+          {claimLoading ? 'Talep Ediliyor...' : `Drop'u Talep Et`}
         </button>
       </div>
     </div>
