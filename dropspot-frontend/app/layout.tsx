@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link"; // Link bileşenini import et
 import { AuthProvider } from "../context/AuthContext"; // AuthProvider'ı import et
+import Navbar from "../components/Navbar";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,36 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider> {/* AuthProvider ile sarmala */}
-          <nav className="bg-gray-800 p-4 text-white">
-            <ul className="flex space-x-4">
-              <li>
-                <Link href="/">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/drops">
-                  Drops
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin/drops">
-                  Admin (Drops)
-                </Link>
-              </li>
-              <li>
-                <Link href="/auth/login">
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Link href="/auth/register">
-                  Register
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          <Navbar />
           {children}
+          <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </AuthProvider>
       </body>
     </html>
