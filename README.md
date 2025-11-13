@@ -179,6 +179,20 @@ export const calculateCoefficients = (seed: string) => {
 
 Seed ve kullanım şekli projenin `priority.service.ts` dosyasında bulunabilir ve `Waitlist`'e katılan kullanıcıların öncelik skorlarının belirlenmesinde rol oynar.
 
+## Ekran Görüntüleri
+
+Bu bölümde projenin temel özelliklerini gösteren ekran görüntülerini bulabilirsiniz. Lütfen ekran görüntülerinizi `assets/screenshots` dizinine yerleştirin ve aşağıdaki gibi Markdown formatında referans verin:
+
+```markdown
+![Ekran Görüntüsü Başlığı](assets/screenshots/ekran-goruntusu-adi.png)
+```
+
+_Ekran görüntüleri buraya eklenecektir._
+
+![Admin: Drop Yönetimi](assets/screenshots/admin-drop-yonetimi.png)
+![Drop Talebi Sayfası](assets/screenshots/drop-talebi.png)
+![Yeni Drop Oluşturma Sayfası](assets/screenshots/yeni-drop-olustur.png)
+
 ## Kurulum Adımları
 
 ### Ön Gereksinimler
