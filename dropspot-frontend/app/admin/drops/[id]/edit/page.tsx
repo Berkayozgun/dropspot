@@ -83,19 +83,6 @@ export default function EditDropPage() {
     setLoading(true);
     setError(null);
     setSuccess(null);
-
-    console.log('Edit Drop: Güncelleme isteği gönderiliyor...');
-    console.log('Edit Drop: Request Body:', JSON.stringify({
-      name,
-      description,
-      price: parseFloat(price.toString()),
-      stock: parseInt(stock.toString()),
-      releaseDate: new Date(releaseDate).toISOString(),
-      claimWindowStart: new Date(claimWindowStart).toISOString(),
-      claimWindowEnd: new Date(claimWindowEnd).toISOString(),
-    }));
-    console.log('Edit Drop: Request Headers:', { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` });
-
     try {
       const response = await fetch(`http://localhost:3000/admin/drops/${id}`, {
         method: 'PUT',
@@ -114,7 +101,6 @@ export default function EditDropPage() {
         }),
       });
 
-      console.log('Edit Drop: Backend yanıtı alındı, status:', response.status);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Drop güncellenirken bir hata oluştu.');

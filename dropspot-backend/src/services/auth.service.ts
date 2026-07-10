@@ -32,7 +32,6 @@ export const loginUser = async (email: string, password_plain: string) => {
   }
 
   const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-  console.log('Generated token:', token); // Token'ı logla
   const { password, ...userWithoutPassword } = user;
   return { user: userWithoutPassword, token };
 };

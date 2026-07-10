@@ -66,7 +66,6 @@ export const updateDrop = async (req: Request, res: Response) => {
 };
 
 export const deleteDrop = async (req: Request, res: Response) => {
-  console.log('Drop Controller: Delete isteği alındı.', req.params.id);
   try {
     const { id } = req.params;
     await dropService.deleteDrop(id);

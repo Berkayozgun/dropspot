@@ -33,14 +33,12 @@ export default function AdminDropsPage() {
     }
 
     async function fetchAdminDrops() {
-      console.log(`Admin Drops: Backend'e drops isteği gönderiliyor...`);
       try {
         const response = await fetch('http://localhost:3000/admin/drops', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Admin Drops: Backend yanıtı alındı, status:', response.status);
         if (response.status === 403) {
           throw new Error('Bu sayfaya erişim yetkiniz yok.');
         }
@@ -48,7 +46,6 @@ export default function AdminDropsPage() {
           throw new Error('Droplar yüklenemedi.');
         }
         const data: Drop[] = await response.json();
-        console.log('Admin Drops: Droplar başarıyla yüklendi:', data);
         setDrops(data);
       } catch (err: any) {
         console.error('Admin Drops: İstek sırasında hata oluştu:', err.message);
@@ -80,9 +77,6 @@ export default function AdminDropsPage() {
       return;
     }
 
-    console.log('Frontend Delete: Silme isteği gönderiliyor. dropId:', dropId);
-    console.log('Frontend Delete: Token mevcut.', token ? 'Evet' : 'Hayır');
-
     try {
       const response = await fetch(`http://localhost:3000/admin/drops/${dropId}`, {
         method: 'DELETE',
@@ -90,8 +84,6 @@ export default function AdminDropsPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log('Frontend Delete: Backend yanıtı alındı, status:', response.status);
 
       if (response.status === 403) {
         throw new Error('Bu sayfaya erişim yetkiniz yok.');
@@ -101,7 +93,6 @@ export default function AdminDropsPage() {
         throw new Error(errorData.message || 'Droplar silinemedi.');
       }
 
-      console.log(`Frontend Delete: Drop başarıyla silindi: ${dropId}`);
       setDrops(drops.filter((drop) => drop.id !== dropId));
       toast.success('Drop başarıyla silindi.');
     } catch (err: any) {
