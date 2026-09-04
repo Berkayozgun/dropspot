@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll=false",
+    "test:watch": "jest --watchAll"
   },
   "dependencies": {
     "next": "16.0.1",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.28.5",

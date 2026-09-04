@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter import edildi
 import Link from 'next/link'; // Link component'i import edildi
 import { toast } from 'react-toastify';
+import { API_URL } from '../../../lib/api';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -19,7 +20,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

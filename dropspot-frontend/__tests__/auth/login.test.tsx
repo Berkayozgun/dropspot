@@ -1,7 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginPage from '../../../app/auth/login/page';
-import { AuthProvider, useAuth } from '../../../context/AuthContext';
+import LoginPage from '../../app/auth/login/page';
+import { AuthProvider, useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
+
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+  },
+}));
 
 // Mock the next/navigation useRouter
 jest.mock('next/navigation', () => ({
@@ -9,7 +17,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock the AuthContext (or you can use a real one if you prefer)
-jest.mock('../../../context/AuthContext', () => ({
+jest.mock('../../context/AuthContext', () => ({
   useAuth: jest.fn(),
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -41,7 +49,7 @@ describe('LoginPage', () => {
     );
 
     expect(screen.getByLabelText(/E-posta/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Şifre/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Parola/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Giriş Yap/i })).toBeInTheDocument();
   });
 
@@ -53,7 +61,7 @@ describe('LoginPage', () => {
     );
 
     const emailInput = screen.getByLabelText(/E-posta/i);
-    const passwordInput = screen.getByLabelText(/Şifre/i);
+    const passwordInput = screen.getByLabelText(/Parola/i);
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -77,7 +85,7 @@ describe('LoginPage', () => {
     );
 
     fireEvent.change(screen.getByLabelText(/E-posta/i), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByLabelText(/Şifre/i), { target: { value: 'password123' } });
+    fireEvent.change(screen.getByLabelText(/Parola/i), { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('button', { name: /Giriş Yap/i }));
 
     await waitFor(() => expect(mockLogin).toHaveBeenCalledWith('mock-token'));
@@ -100,7 +108,7 @@ describe('LoginPage', () => {
     );
 
     fireEvent.change(screen.getByLabelText(/E-posta/i), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByLabelText(/Şifre/i), { target: { value: 'password123' } });
+    fireEvent.change(screen.getByLabelText(/Parola/i), { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('button', { name: /Giriş Yap/i }));
 
     await waitFor(() => expect(screen.getByText(/Geçersiz kimlik bilgileri/i)).toBeInTheDocument());

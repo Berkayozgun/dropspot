@@ -1,6 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RegisterPage from '../../../app/auth/register/page';
+import RegisterPage from '../../app/auth/register/page';
 import { useRouter } from 'next/navigation';
+
+jest.mock('react-toastify', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+  },
+}));
 
 // Mock the next/navigation useRouter
 jest.mock('next/navigation', () => ({
@@ -23,18 +31,18 @@ describe('RegisterPage', () => {
   it('should render the registration form', () => {
     render(<RegisterPage />);
 
-    expect(screen.getByLabelText(/Adınız/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/İsim/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/E-posta/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Şifre/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Parola/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Kayıt Ol/i })).toBeInTheDocument();
   });
 
   it('should allow typing in name, email, and password fields', () => {
     render(<RegisterPage />);
 
-    const nameInput = screen.getByLabelText(/Adınız/i);
+    const nameInput = screen.getByLabelText(/İsim/i);
     const emailInput = screen.getByLabelText(/E-posta/i);
-    const passwordInput = screen.getByLabelText(/Şifre/i);
+    const passwordInput = screen.getByLabelText(/Parola/i);
 
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
     fireEvent.change(emailInput, { target: { value: 'register@example.com' } });
@@ -55,9 +63,9 @@ describe('RegisterPage', () => {
 
     render(<RegisterPage />);
 
-    fireEvent.change(screen.getByLabelText(/Adınız/i), { target: { value: 'New User' } });
+    fireEvent.change(screen.getByLabelText(/İsim/i), { target: { value: 'New User' } });
     fireEvent.change(screen.getByLabelText(/E-posta/i), { target: { value: 'newuser@example.com' } });
-    fireEvent.change(screen.getByLabelText(/Şifre/i), { target: { value: 'newpassword' } });
+    fireEvent.change(screen.getByLabelText(/Parola/i), { target: { value: 'newpassword' } });
     fireEvent.click(screen.getByRole('button', { name: /Kayıt Ol/i }));
 
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/auth/login'));
@@ -74,9 +82,9 @@ describe('RegisterPage', () => {
 
     render(<RegisterPage />);
 
-    fireEvent.change(screen.getByLabelText(/Adınız/i), { target: { value: 'Fail User' } });
+    fireEvent.change(screen.getByLabelText(/İsim/i), { target: { value: 'Fail User' } });
     fireEvent.change(screen.getByLabelText(/E-posta/i), { target: { value: 'fail@example.com' } });
-    fireEvent.change(screen.getByLabelText(/Şifre/i), { target: { value: 'failpassword' } });
+    fireEvent.change(screen.getByLabelText(/Parola/i), { target: { value: 'failpassword' } });
     fireEvent.click(screen.getByRole('button', { name: /Kayıt Ol/i }));
 
     await waitFor(() => expect(screen.getByText(/Bu e-posta zaten kullanılıyor./i)).toBeInTheDocument());

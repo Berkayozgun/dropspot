@@ -3,6 +3,8 @@ module.exports = {
   testEnvironment: 'node',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
+    '^@prisma/client/runtime/library$': '<rootDir>/node_modules/@prisma/client/runtime/library',
+    '^@prisma/client/runtime/(.*)$': '<rootDir>/node_modules/@prisma/client/runtime/$1',
     '@prisma/client': '<rootDir>/generated/prisma',
   },
   roots: ['<rootDir>/src'],

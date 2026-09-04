@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation'; // useParams hook'u eklendi
-import { useAuth } from '../../../../context/AuthContext'; // useAuth hook'unu import et
+import { useAuth } from '../../../../context/AuthContext';
+import { API_URL } from '../../../../lib/api';
 
 interface ClaimResult {
   message: string;
@@ -39,7 +40,7 @@ export default function ClaimPage() { // params prop'u kaldırıldı
 
     async function fetchDropName() {
       try {
-        const response = await fetch(`http://localhost:3000/drops/${id}`);
+        const response = await fetch(`${API_URL}/drops/${id}`);
         if (!response.ok) {
           throw new Error('Drop adı yüklenemedi.');
         }
@@ -65,7 +66,7 @@ export default function ClaimPage() { // params prop'u kaldırıldı
     setClaimLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:3000/drops/${id}/claim`, {
+      const response = await fetch(`${API_URL}/drops/${id}/claim`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +80,7 @@ export default function ClaimPage() { // params prop'u kaldırıldı
         throw new Error(data.message || 'Hak talebi başarısız.');
       }
 
-      setClaimCode(data.claimCode);
+      setClaimCode(data.claimCode ?? null);
       alert(data.message || 'Başarıyla hak talebinde bulunuldu!');
     } catch (err: any) {
       setError(err.message || 'Bir hata oluştu.');

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -25,10 +25,10 @@ const Navbar = () => {
               Drops
             </Link>
           </li>
-          {isAuthenticated && (
+          {isAuthenticated && isAdmin && (
             <li>
               <Link href="/admin/drops" className="hover:text-gray-300 transition-colors duration-200">
-                Admin
+                Admin Paneli
               </Link>
             </li>
           )}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '../../../../../context/AuthContext'; // useAuth hook'unu import et
 import { toast } from 'react-toastify';
+import { API_URL } from '../../../../../lib/api';
 
 interface Drop {
   id: string;
@@ -48,7 +49,7 @@ export default function EditDropPage() {
 
     async function fetchDrop() {
       try {
-        const response = await fetch(`http://localhost:3000/admin/drops/${id}`, {
+        const response = await fetch(`${API_URL}/admin/drops/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -84,7 +85,7 @@ export default function EditDropPage() {
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch(`http://localhost:3000/admin/drops/${id}`, {
+      const response = await fetch(`${API_URL}/admin/drops/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

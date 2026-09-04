@@ -1,0 +1,11 @@
+node_modules
+dist
+generated
+coverage
+.env
+.env.*
+*.md
+.git
+.gitignore
+src/tests
+**/*.test.ts

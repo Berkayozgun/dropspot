@@ -7,16 +7,19 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
+    "prisma/seed.ts",
     "generated/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/tests",
+    "**/*.test.ts"
   ]
 }

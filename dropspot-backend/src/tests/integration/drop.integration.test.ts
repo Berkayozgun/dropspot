@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../../index'; // Express uygulamamızı import et
-import { PrismaClient, Role } from '@prisma/client';
+import app from '../../index';
+import { PrismaClient, Role } from '../../../generated/prisma/client';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 
@@ -14,11 +14,9 @@ describe('Drop API Integration Tests', () => {
   let regularUserId: string;
 
   beforeAll(async () => {
-    // Veritabanını temizle
     await prisma.drop.deleteMany();
     await prisma.user.deleteMany();
 
-    // Test admin kullanıcısı oluştur
     const hashedPassword = await bcrypt.hash('adminpassword', 10);
     const adminUser = await prisma.user.create({
       data: {
@@ -31,7 +29,6 @@ describe('Drop API Integration Tests', () => {
     adminUserId = adminUser.id;
     adminToken = jwt.sign({ userId: adminUser.id, email: adminUser.email, role: adminUser.role }, JWT_SECRET, { expiresIn: '1h' });
 
-    // Test normal kullanıcısı oluştur
     const regularHashedPassword = await bcrypt.hash('userpassword', 10);
     const regularUser = await prisma.user.create({
       data: {
@@ -46,7 +43,6 @@ describe('Drop API Integration Tests', () => {
   });
 
   afterAll(async () => {
-    // Test verilerini temizle
     await prisma.drop.deleteMany();
     await prisma.user.deleteMany();
     await prisma.$disconnect();
@@ -63,9 +59,9 @@ describe('Drop API Integration Tests', () => {
         description: 'This is a test drop',
         price: 100,
         stock: 10,
-        releaseDate: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour from now
-        claimWindowStart: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-        claimWindowEnd: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours from now
+        releaseDate: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        claimWindowStart: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+        claimWindowEnd: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
       });
 
     expect(response.status).toBe(201);
@@ -131,13 +127,11 @@ describe('Drop API Integration Tests', () => {
 
     expect(response.status).toBe(204);
 
-    // Verify the drop is deleted
     const getResponse = await request(app).get('/drops');
     expect(getResponse.body).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: dropId })]));
   });
 
   it('should prevent a regular user from deleting a drop', async () => {
-    // Create a new drop for deletion attempt
     const newDropResponse = await request(app)
       .post('/admin/drops')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -158,7 +152,6 @@ describe('Drop API Integration Tests', () => {
 
     expect(response.status).toBe(403);
 
-    // Clean up the created drop
     await request(app)
       .delete(`/admin/drops/${anotherDropId}`)
       .set('Authorization', `Bearer ${adminToken}`);

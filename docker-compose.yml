@@ -1,7 +1,8 @@
 version: '3.8'
+
 services:
   db:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: user
@@ -11,6 +12,52 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      
+    networks:
+      - dropspot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d dropspot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./dropspot-backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/dropspot
+      JWT_SECRET: dropspot-docker-jwt-secret-change-in-production
+      PORT: 3001
+      NODE_ENV: production
+    ports:
+      - "3001:3001"
+    networks:
+      - dropspot-network
+
+  frontend:
+    build:
+      context: ./dropspot-frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    networks:
+      - dropspot-network
+
+networks:
+  dropspot-network:
+    driver: bridge
+
 volumes:
   postgres_data:

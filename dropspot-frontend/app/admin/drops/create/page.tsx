@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../../context/AuthContext'; // useAuth hook'unu import et
 import { toast } from 'react-toastify';
+import { API_URL } from '../../../../lib/api';
 
 export default function CreateDropPage() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function CreateDropPage() {
     setSuccess(null);
 
     try {
-      const response = await fetch('http://localhost:3000/admin/drops', {
+      const response = await fetch(`${API_URL}/admin/drops`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

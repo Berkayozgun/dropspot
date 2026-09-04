@@ -9,7 +9,7 @@ import { authenticateToken } from './middlewares/auth.middleware';
 import { authorizeAdmin } from './middlewares/admin.middleware'; // authorizeAdmin'i içe aktar
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors()); // CORS middleware'ini ekle

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation'; // useParams hook'u eklendi
 import { useAuth } from '../../../context/AuthContext'; // useAuth hook'unu import et
 import { toast } from 'react-toastify';
+import { API_URL } from '../../../lib/api';
 
 interface Drop {
   id: string;
@@ -39,7 +40,7 @@ export default function DropDetailPage() { // params prop'u kaldırıldı
 
     async function fetchDropDetails() {
       try {
-        const response = await fetch(`http://localhost:3000/drops/${id}`);
+        const response = await fetch(`${API_URL}/drops/${id}`);
         if (!response.ok) {
           throw new Error('Drop detayları yüklenemedi.');
         }
@@ -104,7 +105,7 @@ export default function DropDetailPage() { // params prop'u kaldırıldı
     setJoinLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:3000/drops/${id}/join`, {
+      const response = await fetch(`${API_URL}/drops/${id}/join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ export default function DropDetailPage() { // params prop'u kaldırıldı
     setJoinLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:3000/drops/${id}/leave`, {
+      const response = await fetch(`${API_URL}/drops/${id}/leave`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

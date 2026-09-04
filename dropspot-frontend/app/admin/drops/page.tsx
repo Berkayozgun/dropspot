@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext'; // useAuth hook'unu import et
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import { API_URL } from '../../../lib/api';
 
 interface Drop {
   id: string;
@@ -34,7 +35,7 @@ export default function AdminDropsPage() {
 
     async function fetchAdminDrops() {
       try {
-        const response = await fetch('http://localhost:3000/admin/drops', {
+        const response = await fetch(`${API_URL}/admin/drops`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -78,7 +79,7 @@ export default function AdminDropsPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/admin/drops/${dropId}`, {
+      const response = await fetch(`${API_URL}/admin/drops/${dropId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

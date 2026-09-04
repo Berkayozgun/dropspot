@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/AuthContext'; // useAuth hook'unu impo
 import { useRouter } from 'next/navigation'; // useRouter hook'unu import et
 import Link from 'next/link'; // Link component'ini import et
 import { toast } from 'react-toastify';
+import { API_URL } from '../../../lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { API_URL } from '../../lib/api';
 
 interface Drop {
   id: string;
@@ -23,7 +24,7 @@ export default function DropsPage() {
   useEffect(() => {
     async function fetchDrops() {
       try {
-        const response = await fetch('http://localhost:3000/drops');
+        const response = await fetch(`${API_URL}/drops`);
         if (!response.ok) {
           throw new Error('Droplar yüklenemedi.');
         }
